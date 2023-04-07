@@ -1,5 +1,6 @@
 # Clean a bit after some time
 *.csv
+.ssh/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
