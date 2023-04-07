@@ -1,4 +1,5 @@
 # Clean a bit after some time
+# Added by me
 *.csv
 .ssh/
 # Byte-compiled / optimized / DLL files
