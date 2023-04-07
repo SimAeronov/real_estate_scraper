@@ -1,0 +1,54 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+
+
+scraped_data = pd.read_csv("scraped_data.csv")
+
+scraped_data.rename(columns={"What is the Location?": "Location", "What is the Price?": "Price",
+                             "What is the Link?": "Link"}, inplace=True)
+
+# Here I remove rows that contain "ask for price" in "Price" column
+scraped_data = scraped_data[scraped_data["Price"].str.contains("Ценапризапитване") == False]
+
+
+# Get Locations vs count
+List_unique_location_names,List_unique_location_count, random_colors= [], [], []
+for idx,name in enumerate(scraped_data['Location'].value_counts(normalize=True).index.tolist()):
+    # I need only the name of the Town and I use the "," to find it
+    name = name.split(",")[0]
+    List_unique_location_names.append(name)
+    List_unique_location_count.append(scraped_data['Location'].value_counts(normalize=True)[idx])
+    # Here I generate random hex colors for my bars
+    random_int_color = lambda: random.randint(0, 255)
+    random_colors.append('#%02X%02X%02X' % (random_int_color(),random_int_color(),random_int_color()))
+
+# Price
+# Kinda complicated expression, here I search inside "Price" column for substring "лв."
+# Once I find this substring I convert to int, then from BGN to Euro, then again to int
+scraped_data.loc[scraped_data["Price"].str.contains("лв"), "Price"] = \
+    (scraped_data["Price"].str.replace("лв.","", regex=True).astype(int)/0.51).astype(int)
+
+# Now that I have cleared "Price" column I can convert everything to integer
+scraped_data["Price"] = scraped_data["Price"].astype(int)
+
+
+
+price_mean = scraped_data.groupby('Location', as_index=True)['Price'].mean()
+
+# Create Plot
+fig, ax = plt.subplots(figsize=(10, 5))
+ax2 = ax.twinx()
+ax.bar(List_unique_location_names, List_unique_location_count, color=random_colors)
+ax2.bar(List_unique_location_names, price_mean, color="black", alpha=0.2)
+ax.set_xlabel('Location')
+ax.set_ylabel('Count')
+ax2.set_ylabel('Amount')
+fig.autofmt_xdate(rotation=90)
+plt.subplots_adjust(bottom=0.3)
+plt.show()
+
+
+
+scraped_data.loc[scraped_data['Location'] == "с. Новаковци"]
+
