@@ -1,2 +1,2 @@
-Data if for the town of Gabrovo including everything
-i.e select Gabrovo and click search - get this link
+Data if for a town including everything
+i.e select Town and click search - get this link
